@@ -4,7 +4,18 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
-const routes = []
+const routes = [{
+  path: '/',
+  redirect: '/login'
+}, {
+  path: '/login',
+  name: 'Login',
+  component: () => import('@/views/login.vue')
+}, {
+  path: '/home',
+  name: 'Home',
+  component: () => import('@/views/home.vue')
+}]
 
 const router = new VueRouter({
   mode: 'history',
@@ -12,4 +23,14 @@ const router = new VueRouter({
   routes
 })
 
+router.beforeEach((to, from, next) => {
+  if (to.path === '/login') {
+    return next()
+  }
+  const token = window.sessionStorage.getItem('token')
+  if (!token) {
+    return next('/login')
+  }
+  next()
+})
 export default router
